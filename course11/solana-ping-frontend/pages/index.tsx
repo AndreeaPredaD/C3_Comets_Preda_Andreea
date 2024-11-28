@@ -13,8 +13,6 @@ import { SendSolanaForm } from "../components/SendSolana";
 const Home: NextPage = (props) => {
 
   return (
-
-
     <div className={styles.App}>
 
       <Head>

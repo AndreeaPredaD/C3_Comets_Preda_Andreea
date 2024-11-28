@@ -1,37 +1,37 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { PublicKey, Transaction, TransactionInstruction} from '@solana/web3.js'
-import { FC, useState } from 'react'
+import * as web3 from '@solana/web3.js'
+import { FC } from 'react'
 import styles from '../styles/PingButton.module.css'
 
-const pingProgramId = new PublicKey(`ChT1B39WKLS8qUrkLvFDXMhEJ4F1XZzwUNHUt4AU9aVa`)
-const pingProgramDataAccount = new PublicKey(`Ah9K7dQ8EHaZqcAsgBW8w37yN2eAy3koFmUn4x3CJtod`)
+const PROGRAM_ID = `ChT1B39WKLS8qUrkLvFDXMhEJ4F1XZzwUNHUt4AU9aVa`
+const DATA_ACCOUNT_PUBKEY = `Ah9K7dQ8EHaZqcAsgBW8w37yN2eAy3koFmUn4x3CJtod`
 
 export const PingButton: FC = () => {
 	const { connection } = useConnection();
 	const { publicKey, sendTransaction } = useWallet();
 
 	const onClick = async () => {
-		if (!connection || !publicKey) { 
-        console.error("Wallet unavailable")
-        return
-     }
+		if (!connection || !publicKey) { return }
 
-		const tx = new Transaction()
+		const programId = new web3.PublicKey(PROGRAM_ID)
+		const programDataAccount = new web3.PublicKey(DATA_ACCOUNT_PUBKEY)
+		const transaction = new web3.Transaction()
 
-		const ix = new TransactionInstruction({
-			keys: [{
-					pubkey: pingProgramDataAccount,
+		const instruction = new web3.TransactionInstruction({
+			keys: [
+				{
+					pubkey: programDataAccount,
 					isSigner: false,
 					isWritable: true
-				  },
-			  ],
-        programId: pingProgramId,
-      });
+				},
+			],
+			programId
+		});
 
-		tx.add(ix)
-    const sig = await sendTransaction(tx, connection)
+		transaction.add(instruction)
 
-    console.log('Sent transaction', sig)
+		const sig = await sendTransaction(transaction, connection);
+		console.log(sig)
 	}
 
 	return (
